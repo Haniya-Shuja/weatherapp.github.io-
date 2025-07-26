@@ -1,67 +1,97 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      text-align: center;
+      padding: 40px;
+      color: #fff;
+    }
 
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      width: 200px;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      background-color: #fff;
+      color: #333;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10px;
+      font-weight: bold;
+    }
+
+    #weatherResult {
+      margin-top: 30px;
+      font-size: 1.2rem;
+    }
+
+    .error {
+      color: #ffcccb;
+      margin-top: 20px;
+    }
+  </style>
 </head>
-
 <body>
+  <h1>🌤️ Weather App</h1>
+  <form onsubmit="getWeather(); return false">
+    <input type="text" id="cityName" placeholder="Enter city name..." required />
+    <button type="submit">Get Weather</button>
+  </form>
 
-    <h1>es6 Weather app</h1>
+  <div id="weatherResult"></div>
+  <div id="errorMessage" class="error"></div>
 
+  <script>
+    function getWeather() {
+      const API_KEY = '14b64dd8d198adcb0127849a46f0b6e9';
+      const cityName = document.getElementById("cityName").value.trim();
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`;
 
-    <form onsubmit="getWeather(); return false">
-        City Name: <input type="text" id="cityName">
+      // Clear previous results
+      document.getElementById("weatherResult").innerHTML = '';
+      document.getElementById("errorMessage").innerText = '';
 
-        <br>
-        <button type="submit">Get Weather</button>
-    </form>
-
-    <h1 id="result"> </h1>
-    <h3 id="subtitle"> </h3>
-
-    <script>
-
-        function getWeather() {
-            const API_KEY = '14b64dd8d198adcb0127849a46f0b6e9'
-
-            const cityName = document.getElementById("cityName").value;
-
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`
-
-            console.log("url: ", url);
-
-
-            axios.get(url)
-                .then(function (response) {
-                    // handle success
-                    console.log("success response")
-                    console.log(response.data);
-
-                    document.querySelector("#result").innerHTML = response.data.name
-                    document.querySelector("#result").innerHTML += '<br />'
-                    document.querySelector("#result").innerHTML += `${response.data.main.temp}°C`
-
-                    document.querySelector("#subtitle").innerHTML +=
-                        `Min: ${response.data.main.temp_min}°C - Max: ${response.data.main.temp_min}°C`
-
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.log(error);
-                })
-
-        }
-
-    </script>
-
-
-
+      axios.get(url)
+        .then(function (response) {
+          const data = response.data;
+          const resultHTML = `
+            <h2>${data.name}, ${data.sys.country}</h2>
+            <p><strong>Temperature:</strong> ${data.main.temp}°C</p>
+            <p><strong>Condition:</strong> ${data.weather[0].main}</p>
+            <p><strong>Min:</strong> ${data.main.temp_min}°C | <strong>Max:</strong> ${data.main.temp_max}°C</p>
+          `;
+          document.getElementById("weatherResult").innerHTML = resultHTML;
+        })
+        .catch(function (error) {
+          console.error("Error fetching weather:", error);
+          document.getElementById("errorMessage").innerText =
+            "City not found or network error. Please try again.";
+        });
+    }
+  </script>
 </body>
-
 </html>
